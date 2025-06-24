@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product Support Chat</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      padding: 40px;
+      background: linear-gradient(to bottom right, #1e3c72, #2a5298);
+      font-family: Arial, sans-serif;
+      color: white;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+    #left, #right {
+      width: 45%;
+    }
+    #right {
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+    }
+    input {
+      background: #fff;
+      color: #000;
+    }
+    button {
+      background: #28a745;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #218838;
+    }
+    #responseBox {
+      margin-top: 20px;
+      padding: 10px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      min-height: 80px;
+    }
+  </style>
+
+  <!-- ✅ FastBots embed script -->
+  <script defer src="https://app.fastbots.ai/embed.js" data-bot-id="cmc92a2ia0001oelvmhmwfiud"></script>
+</head>
+
+<body>
+  <!-- FastBots Chatbot Section -->
+  <div id="left">
+    <h2>FastBots Chatbot</h2>
+    <p>The chat bubble will appear in the corner of the screen automatically.</p>
+  </div>
+
+  <!-- Custom Chatbot connected to your backend -->
+  <div id="right">
+    <h2>Ask About Dryrobe (Custom AI)</h2>
+    <input type="text" id="userInput" placeholder="e.g. Is Dryrobe waterproof?" />
+    <button onclick="sendToBackend()">Ask</button>
+    <div id="responseBox">🤖 Response will appear here.</div>
+  </div>
+
+  <script>
+    async function sendToBackend() {
+      const question = document.getElementById("userInput").value;
+      const responseBox = document.getElementById("responseBox");
+      responseBox.innerText = "🤖 Thinking...";
+
+      try {
+        const res = await fetch("http://localhost:5500/api/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question }),
+        });
+
+        const data = await res.json();
+        responseBox.innerText = "🤖 " + (data.reply || "Sorry, no answer.");
+      } catch (err) {
+        console.error(err);
+        responseBox.innerText = "❌ Error contacting backend.";
+      }
+    }
+  </script>
+</body>
+</html>
