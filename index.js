@@ -2,16 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-require("dotenv").config();
+
 const app = express();
 const PORT = 5500;
 
 app.use(cors());
 app.use(bodyParser.json());
 
-
 // ✅ Replace with your valid Gemini API key
-const genAI = new GoogleGenerativeAI(process.env.AIzaSyBY5slUED1eNMYm35XHTuGz1V89dboTy70);
+const genAI = new GoogleGenerativeAI("AIzaSyBY5slUED1eNMYm35XHTuGz1V89dboTy70");
 
 app.post("/api/ask", async (req, res) => {
   const question = req.body.question;
