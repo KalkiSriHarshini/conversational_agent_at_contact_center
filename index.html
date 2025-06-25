@@ -1,95 +1,219 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Product Support Chat</title>
+  <title>Dryrobe Support Chat</title>
   <style>
     body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
       display: flex;
       justify-content: space-around;
       align-items: flex-start;
       padding: 40px;
-      background: linear-gradient(to bottom right, #1e3c72, #2a5298);
-      font-family: Arial, sans-serif;
-      color: white;
       height: 100vh;
       box-sizing: border-box;
-    }
-    #left, #right {
-      width: 45%;
-    }
-    #right {
-      background: rgba(255,255,255,0.1);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: none;
-    }
-    input {
-      background: #fff;
-      color: #000;
-    }
-    button {
-      background: #28a745;
+      background-image: url("images/dryrobe-lifestyle-shot.webp");
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
+      background-attachment: fixed;
       color: white;
-      cursor: pointer;
-      transition: background 0.3s ease;
+      position: relative;
     }
-    button:hover {
-      background: #218838;
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.2);
+      z-index: -1;
     }
-    #responseBox {
-      margin-top: 20px;
+
+    #left {
+      width: 60%;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      color: #ffffff;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+    }
+
+    #left h2 {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+
+    #left p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    #right {
+      width: 30%;
+      background-color: rgba(237, 246, 251, 0.95);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      height: 90vh;
+    }
+
+    .chat-header {
+      background-color: #dcd5d5;
+      color: rgb(3, 18, 67);
+      padding: 15px;
+      font-size: 1.2rem;
+      border-radius: 12px 12px 0 0;
+      font-weight: bold;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 70%;
+      padding: 10px 15px;
+      border-radius: 20px;
+      word-wrap: break-word;
+      font-size: 1rem;
+    }
+
+    .user-msg {
+      align-self: flex-end;
+      background-color: #568036;
+      color: white;
+    }
+
+    .bot-msg {
+      align-self: flex-start;
+      background-color: #8dbbea;
+      color: black;
+    }
+
+    .input-area {
+      display: flex;
+      border-top: 1px solid #ccc;
+      padding: 15px;
+      background: #91ecb5;
+      border-radius: 0 0 12px 12px;
+    }
+
+    input {
+      flex: 1;
       padding: 10px;
-      background: rgba(0,0,0,0.3);
-      border-radius: 8px;
-      min-height: 80px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 20px;
+      outline: none;
+      background-color: #fffdfe;
+    }
+
+    button {
+      margin-left: 10px;
+      padding: 10px 20px;
+      background-color: #25d366;
+      border: none;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #1ebc58;
     }
   </style>
 
-  <!-- ✅ FastBots embed script -->
+  <!-- ✅ FastBots embed -->
   <script defer src="https://app.fastbots.ai/embed.js" data-bot-id="cmc92a2ia0001oelvmhmwfiud"></script>
 </head>
 
 <body>
-  <!-- FastBots Chatbot Section -->
   <div id="left">
-    <h2>FastBots Chatbot</h2>
-    <p>The chat bubble will appear in the corner of the screen automatically.</p>
+    <h2>Welcome to Dryrobe Product Support</h2>
+    <p>Need help choosing the right Dryrobe product? Whether it’s sizing, waterproof features,
+      warmth levels, or order details — ask away! Our intelligent assistant is here to guide you.</p>
+    <p>You can also ask about delivery timelines, product materials, care instructions, or what makes Dryrobe unique.</p>
   </div>
 
-  <!-- Custom Chatbot connected to your backend -->
   <div id="right">
-    <h2>Ask About Dryrobe (Custom AI)</h2>
-    <input type="text" id="userInput" placeholder="e.g. Is Dryrobe waterproof?" />
-    <button onclick="sendToBackend()">Ask</button>
-    <div id="responseBox">🤖 Response will appear here.</div>
+    <div class="chat-header">Dryrobe Support Chat (Gemini AI)</div>
+    <div class="chat-box" id="chatBox"></div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Ask something..." onkeydown="handleKey(event)" />
+      <button onclick="sendToBackend()">Send</button>
+    </div>
   </div>
 
   <script>
     async function sendToBackend() {
-      const question = document.getElementById("userInput").value;
-      const responseBox = document.getElementById("responseBox");
-      responseBox.innerText = "🤖 Thinking...";
+      const inputEl = document.getElementById("userInput");
+      const chatBox = document.getElementById("chatBox");
+      const question = inputEl.value.trim();
+
+      if (!question) return;
+
+      const userMsg = document.createElement("div");
+      userMsg.className = "message user-msg";
+      userMsg.textContent = question;
+      chatBox.appendChild(userMsg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      inputEl.value = "";
+
+      // ✅ Filter: only Dryrobe-related questions allowed
+      const dryrobeKeywords = [
+        "dryrobe", "robe", "jacket", "shipping", "order", "delivery",
+        "waterproof", "warm", "size", "material", "product", "return",
+        "exchange", "dry robe", "care", "fleece", "thermal", "hood", "fabric"
+      ];
+      const lowerQ = question.toLowerCase();
+      const isDryrobeRelated = dryrobeKeywords.some(keyword => lowerQ.includes(keyword));
+
+      if (!isDryrobeRelated) {
+        const botMsg = document.createElement("div");
+        botMsg.className = "message bot-msg";
+        botMsg.textContent = "🤖 I can only assist with Dryrobe-related queries. Please ask something about Dryrobe products, orders, or features.";
+        chatBox.appendChild(botMsg);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        return;
+      }
 
       try {
-        const res = await fetch("http://localhost:5500/api/ask", {
+        const res = await fetch("https://conversational-agent-at-contact-center.onrender.com/api/ask", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question }),
+          body: JSON.stringify({ question })
         });
-
         const data = await res.json();
-        responseBox.innerText = "🤖 " + (data.reply || "Sorry, no answer.");
+
+        const botMsg = document.createElement("div");
+        botMsg.className = "message bot-msg";
+        botMsg.textContent = data.reply || "❌ No answer received.";
+        chatBox.appendChild(botMsg);
+        chatBox.scrollTop = chatBox.scrollHeight;
       } catch (err) {
         console.error(err);
-        responseBox.innerText = "❌ Error contacting backend.";
+        const botMsg = document.createElement("div");
+        botMsg.className = "message bot-msg";
+        botMsg.textContent = "❌ Error contacting backend.";
+        chatBox.appendChild(botMsg);
+      }
+    }
+
+    function handleKey(e) {
+      if (e.key === "Enter") {
+        sendToBackend();
       }
     }
   </script>
